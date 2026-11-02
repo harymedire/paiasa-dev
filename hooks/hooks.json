@@ -1,0 +1,17 @@
+{
+  "description": "PAIASA DEV guard: active only in projects with a .dev/ folder. Blocks force-push, direct push to main/master, hard reset to remote branches and committing .env files.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.sh\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "paiasa-dev",
+  "description": "PAIASA DEV Team plugin for Claude Code",
+  "owner": { "name": "harymedire", "url": "https://github.com/harymedire" },
+  "plugins": [
+    {
+      "name": "paiasa-dev",
+      "source": "./",
+      "description": "Development agent team that implements dev prompts end to end: tests, reviews, security, evidence, PRs, releases and maintenance.",
+      "category": "development"
+    }
+  ]
+}
