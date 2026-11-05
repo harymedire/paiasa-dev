@@ -22,6 +22,16 @@ Your task gives you: the prompt, the triage (with the profile), CLAUDE.md, secur
 9. Make small, meaningful commits with clear messages.
 10. No research or spikes unless the task says so. If you are truly blocked by an unknown, stop and say what you'd need to find out.
 
+## Build it right the first time
+Fewer reviewers means the quality has to come from you. Before you call it done, check your own diff against this list:
+- **Complete**: every AC fully done, including the empty, loading, error and validation states a user will hit. No TODOs, mocks, hardcoded test data or placeholder text left in.
+- **Correct**: edge cases from the AC handled; inputs validated on the server; errors handled and shown to the user in plain words, logged without sensitive data.
+- **Safe**: authorization checked on the server for every read and write (another user's resource, wrong role, no login); no secrets in code; parameterized queries; output encoded (security.md Layer 1).
+- **Fits the project**: reuse existing components, helpers and patterns instead of writing new ones; same naming, structure, i18n and styling as the rest of the code (CLAUDE.md).
+- **Clean**: small readable functions, clear names, no dead or duplicated code, no unrelated changes. Migrations reversible or with a forward-fix note.
+- **Works for real**: you ran it and clicked through the main flow on desktop and mobile width, not just the tests.
+If something on this list can't be done in this task, say so in the PR and add it to `.dev/followups.md`; don't hide it.
+
 ## Better approach
 If you see a meaningfully better solution than the prompt describes:
 - If it changes **neither behavior nor scope**, do it and document it under "Deviations" with the trade-off.

@@ -19,10 +19,13 @@ Your task gives you the prompt (with ACs), the diff range or branch, CLAUDE.md, 
    - **Consistency**: does it follow CLAUDE.md and the existing patterns? Watch for duplicated logic that already exists elsewhere.
    - **Scope**: is there anything unrelated or unexplained in the diff?
 3. Run the tests if it helps to confirm a suspicion.
-4. **Prototype profile only:** you are the only reviewer, so also do a quick risk pass: missing authorization on data, secrets in the diff, migrations without rollback, unbounded queries. Raise anything serious as blocking; the rest as `hardening` follow-ups.
+4. **Prototype and standard:** you are usually the only reviewer, so also do a quick risk pass: missing authorization on data, secrets in the diff, migrations without rollback, unbounded queries. Raise anything serious as blocking; the rest as `hardening` follow-ups.
 
 ## Then history
 Only after the independent pass, read the earlier review rounds and responses for this task, if any. Don't re-raise a justified point unless you have new evidence.
+
+## Final-check mode
+After the last task, you get all prompts, their ACs and the combined diff. Look only for **inconsistencies**: ACs missing or partly done, features that don't fit together (API/data shapes, links between pages, naming of the same thing, duplicated logic), plan says X but code does Y, leftover TODOs/mocks/debug code. Write `.dev/final-check.md` as a short table (what, where, prompt, severity). No style remarks.
 
 ## Report
 Use the findings format exactly. Every finding needs file:line evidence, a **concrete failure scenario** (input/state → wrong result), and `Blocking: blocking | follow-up`. **At most 5 blocking findings**; rank them and move the rest to follow-up. Report real problems only; style belongs to linters, and don't ask for tests beyond the test budget. Use the severity definitions honestly.

@@ -32,7 +32,7 @@ Projects can add rules in `.dev/risk-rules.md` (e.g. from the PM team's team.md 
 
 ## What each flag activates
 
-The flags are always recorded. **Which reviewers they activate depends on the profile** (profiles.md): in prototype only auth/payments get a security review; in standard auth, payments and personal data get one and architecture review runs only for real architecture changes; in production the table below applies in full. Whatever a profile skips for a flagged area goes to `.dev/followups.md` as `hardening`.
+The flags are always recorded. **Which reviewers they activate depends on the profile** (profiles.md): in prototype only login/auth and payments get a security review; in standard also personal data; nothing else gets an extra reviewer; in production the table below applies in full. Whatever a profile skips for a flagged area goes to `.dev/followups.md` as `hardening`.
 
 Production (full):
 

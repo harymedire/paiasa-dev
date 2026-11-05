@@ -5,7 +5,7 @@ How much evidence depends on the profile (profiles.md):
 | Profile | Where | Contents |
 |---|---|---|
 | prototype | the PR description (no separate file) | AC table (AC → test → pass), CI or local test result line, 2–4 screenshots for UI, follow-ups added |
-| standard | `.dev/evidence/<prompt-id>.md`, one screen, written by the orchestrator | the same, plus reviewers that ran and their verdicts, deviations |
+| standard | the PR description | the same, plus reviewers that ran and their verdicts |
 | production | full package below, written by the evidence-reporter | everything below |
 
 Short form (prototype/standard):

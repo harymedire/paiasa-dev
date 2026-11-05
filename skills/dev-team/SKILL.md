@@ -1,7 +1,7 @@
 ---
 name: dev-team
 description: Run the PAIASA development agent team. Takes dev prompts (from the PAIASA PM team or written by hand) and implements them end to end with risk triage, tests written from acceptance criteria, independent code/security/architecture/performance review, UI verification, evidence packages, draft PRs, staging releases, production release preparation and maintenance. Adopts existing projects safely, resumes previous runs, and extends its own agent team and models from the PM team's team recommendation.
-argument-hint: "<prompt file | prompts folder | pasted task | 'resume' | 'maintain' | 'release' | 'harden [module|all]'> [--profile prototype|standard|production]"
+argument-hint: "<prompt file | prompts folder | pasted task | 'resume' | 'maintain' | 'release' | 'harden [module|all]' | 'final-check'> [--profile prototype|standard|production]"
 ---
 
 # PAIASA DEV team
@@ -63,6 +63,7 @@ Read onboarding-and-team.md.
 - Argument is `maintain` → **maintenance mode** (release-and-operations.md).
 - Argument is `release` → **release mode** (Phase 4).
 - Argument is `harden [module|all]` → **harden mode** (see "Harden").
+- Argument is `final-check` → run the **Final check** now.
 - Code exists but no `.dev/` → **adopt-existing**: run the audit steps and give the user the health report before implementing anything. New prompts can start after the audit; propose improvements as separate tasks.
 - Empty or new folder → **new**: scaffold per onboarding.
 - If the current folder is not a project folder, ask where the repo is.
@@ -93,41 +94,49 @@ The user may change models per task or per agent, the number of review rounds, o
 4. **No research by default.** A spike (researcher) runs only if the user asks, or if a novelty flag truly blocks implementation and the user says yes to a one-line proposal. An ADR is written only for a new library or a real architecture change (short in prototype/standard); major changes need human approval of the ADR before implementation.
 5. Independent ready tasks start in parallel; dependent tasks start on a **stacked branch** without waiting for the merge (execution.md).
 
-## Phase 3: Build one task
+## Phase 3: Build one task — make, check, ship
 
-The steps scale with the profile (profiles.md). The default (standard) flow:
+Default flow (prototype and standard). Keep it this short.
 
 ```
-branch (stacked on the parent task's branch if dependent; worktree if parallel)
- → implementer: code + tests (one per AC, AC edge cases, negative access tests), within the test budget
- → implementer self-check: build, tests, start the app, walk the main flow, 2–4 screenshots for UI,
-   stop the server; every command with a timeout (execution.md)
- → you: re-run build/tests yourself (with timeouts); save the summary
- → review round (fresh, parallel): code-reviewer + risk-guardian
-       + security-reviewer / architecture-guardian per profile and flags
-       (re-run layer-2 triage on the real diff first)
- → gate: zero open BLOCKING findings → continue; follow-ups go to .dev/followups.md
-       else implementer fixes or justifies → re-review only by the reviewer that raised it.
-       Rounds per profile (prototype 1, standard 2, production 2). A targeted fix after the
-       last round is allowed without asking when every fix is small (config, a few lines, step
-       order); the reviewer who raised it re-checks narrowly. Escalate only if a fix isn't small.
- → evidence per profile: PR description (prototype) / short evidence.md (standard) / full
-   package by evidence-reporter (production)
- → you: push branch, open a DRAFT PR (gh/glab if available; else report the branch).
-   Ask before the first push to a remote in this project.
- → user: one line — task, PR link, ADR to approve (if any)
- → STATE.md: pr-open; the next ready task is already running
+1. MAKE   implementer: code + tests (one per AC + negative access tests where there is login/roles),
+          built right the first time: complete ACs with empty/error states, server-side validation
+          and authorization, reuse of existing patterns, clean code, no TODOs/mocks left
+          (implementer.md "Build it right the first time")
+2. CHECK  implementer: build, tests, start the app, walk the main flow, stop the server (timeouts)
+          you: re-run build/tests
+          one fresh reviewer reads the diff: code-reviewer
+            + security-reviewer only on login/auth, payments (and personal data in standard)
+          blocking findings (max 5) → one fix → the same reviewer re-checks that point → done
+          everything else → .dev/followups.md (hardening if needed before production)
+3. SHIP   draft PR (stacked on the parent branch if dependent) → one line to the user
+          → the next ready task is already running
 ```
 
-Production adds: test-engineer writes the tests before the code, codebase-analyst map for M/L tasks, ui-verifier for UI tasks, evidence-reporter, and every flagged reviewer.
+No research, no ADR, no extra reviewers, no evidence files in this flow unless the user asks or a real architecture change/new library needs a short ADR. Evidence = the PR description (AC → test → pass, test result, 2–4 screenshots for UI).
 
-The implementer may propose a **better approach** than the prompt. If it changes behavior or scope, stop and ask (the user / PM team). If it doesn't, record it under "Deviations".
+**Production** (profile `production`, or `harden`) adds: test-engineer writes the tests before the code, risk-guardian and every flagged reviewer, codebase map for M/L tasks, ui-verifier, full evidence package, 2 rounds.
+
+The implementer may propose a **better approach** than the prompt. If it changes behavior or scope, stop and ask (the user / PM team). If it doesn't, note it in the PR.
 
 You may propose merging 2–3 small related prompts into one PR (ask once). After the first 2 tasks, report the average time per task and an estimate for the rest.
 
 ## Phase 4: Release
 
 On `release`, or when a set of merged tasks forms a release: the **release-engineer** prepares `.dev/releases/<version>.md` per the checklist, deploys to **staging**, runs smoke tests, and writes or updates the runbooks. Before that, check `.dev/followups.md` and `.dev/risk-rules.md`: open `hardening` items for modules in the release, or a pre-production gate without evidence, make the release **no-go**; say which items and propose `harden <module>`. Then you present the checklist to the user and ask for the **production go/no-go**. If the user says yes and the project's deploy is scriptable, the release-engineer runs it and does post-deploy checks; otherwise give the user the exact steps.
+
+## Final check (after the last task, always)
+
+When every prompt in the set is done (PRs open or merged), run **one final check** before telling the user the work is finished. Remember it: the work is not done without it.
+1. Check out the combined result (main with the merged PRs, or the top of the stack). Run the full build, tests and e2e once (timeouts).
+2. Start the app and walk every main flow end to end, across features, the way a user would. Stop the server after.
+3. Spawn a fresh **code-reviewer in final-check mode** with all prompts, their ACs, and the combined diff since the start. It looks for **inconsistencies**, not style:
+   - an AC that is missing or only partly done;
+   - features that don't fit together (one task's API or data shape vs another's, broken links between pages, different names for the same thing, duplicated logic);
+   - the plan or prompt says X, the code does Y;
+   - leftover TODOs, mocks, test data or debug code;
+   - open `hardening` follow-ups that block production.
+4. Write `.dev/final-check.md`: a short table of inconsistencies (what, where, which prompt, severity) and the result of the run. Real problems become fix tasks through the normal flow; tell the user in a few lines: what is consistent, what isn't, and what you're fixing.
 
 ## Harden (`harden [module|all]`)
 

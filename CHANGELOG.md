@@ -5,6 +5,9 @@
 Based on a real project (ReUseChain, 5.11.2026) where the plugin ran at maximum strictness on a demo with synthetic data: three tasks took ~22 h, one login task produced 1,160 tests and a 909-file PR, and Fable used 66 % of the weekly limit on day one.
 
 ### Added
+- **Make → check → ship** as the default flow (prototype and standard): implementer builds and tests, runs it, one fresh reviewer (+ security on login/auth and payments), one small fix, draft PR.
+- **Build it right the first time**: implementer self-review checklist (complete ACs with empty/error states, server-side validation and authorization, reuse of existing patterns, clean code, no TODOs or mocks left, clicked through on desktop and mobile).
+- **Final check** after the last task (and `final-check` command): full run of the combined app plus a fresh review for inconsistencies across tasks and against the plan → `.dev/final-check.md`.
 - **Process profiles** `prototype`, `standard` (default), `production` (`reference/profiles.md`). Chosen in Phase 1, stored in `.dev/team.md`, or per task with `--profile`.
 - **`harden [module|all]`**: runs the production process over modules with open `hardening` follow-ups before production; recommends a pen-test for auth, payments and personal data.
 - **`.dev/followups.md`**: everything a profile postpones, tagged `hardening`, `cleanup`, `ux` or `perf`. Open `hardening` items make a release no-go.

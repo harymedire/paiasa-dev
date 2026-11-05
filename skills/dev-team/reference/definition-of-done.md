@@ -20,7 +20,7 @@ All profiles:
 - [ ] The implementer ran the app and walked the main flow; servers it started are stopped.
 - [ ] Zero open **blocking** findings from every reviewer that ran; follow-ups are in `.dev/followups.md`.
 - [ ] No secrets, debug code, commented-out code or unrelated changes in the diff.
-- [ ] Evidence per profile: PR description (prototype), short `.dev/evidence/<id>.md` (standard), full package (production).
+- [ ] Evidence: the PR description (prototype/standard), the full package (production).
 - [ ] PR opened as **draft** (or ready-for-review if the project allows). **Never merged by an agent.**
 
 Production adds:
@@ -31,6 +31,6 @@ Production adds:
 
 ## Fix loop limit
 
-Review rounds per profile: **prototype 1, standard 2, production 2** (a user override in `.dev/team.md` wins). Only blocking findings start a new round.
+Review rounds per profile: **prototype 1, standard 1, production 2**, each followed by an allowed small fix (a user override in `.dev/team.md` wins). Only blocking findings start a new round.
 
 After the last round, a **targeted fix** is allowed without asking the user when every remaining fix is small (configuration, a few lines, the order of steps). The reviewer who raised the finding re-checks only that point. If a fix is not small, or the same finding reappears without new information, stop and write `.dev/tasks/<id>/escalation.md` for the human Tech Lead (or the person the override names), with both positions and evidence.

@@ -107,7 +107,7 @@ Before spawning an agent for a task, take the first rule that matches:
 4. the profile (profiles.md; implementer is opus unless production + explicit user yes);
 5. the agent's frontmatter default.
 
-Round limit: the active override's value, else the PM `team.md` value, else the profile's (prototype 1, standard 2, production 2). Write the resolved model per agent and the round limit into the task's `triage.md`, so the evidence package shows what ran.
+Round limit: the active override's value, else the PM `team.md` value, else the profile's (prototype 1, standard 1, production 2). Write the resolved model per agent and the round limit into the task's `triage.md`, so the evidence package shows what ran.
 
 What an override cannot change: the non-negotiable rules (SKILL.md), a code-reviewer on every task, a test for every AC, humans merging and approving production. Anything an override or a profile skips for a risky area is recorded as `hardening` in `.dev/followups.md`. If a request would break one of these, say which rule and ask.
 

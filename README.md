@@ -46,6 +46,7 @@ Otvori Claude Code u **repozitoriju koda** i pokreni:
 /paiasa-dev:dev-team resume
 /paiasa-dev:dev-team release
 /paiasa-dev:dev-team maintain
+/paiasa-dev:dev-team final-check                                ← završna provjera neslaganja (ide i sama na kraju)
 /paiasa-dev:dev-team harden auth                                 ← puni pregled modula prije produkcije (ili `all`)
 /paiasa-dev:dev-team ../plan/prompts/04-login.md --profile prototype   ← profil samo za ovaj zadatak
 ```
@@ -54,35 +55,33 @@ Otvori Claude Code u **repozitoriju koda** i pokreni:
 - **Postojeći projekat koji je neko započeo:** prvo uradi pregled koda, sigurnosti i arhitekture i daje ti izvještaj o stanju s prijedlozima. Bez tvog odobrenja ništa ne refaktoriše.
 - **Nastavak:** ako postoji `.dev/STATE.md`, nastavlja gdje je stao.
 
-## Profili procesa
-
-Tim radi **razvoj i provjeru onoga što je napravio**, a strogoća zavisi od profila. Profil biraš jednom za projekat (tim pita na početku, a zadani je **standard**) ili za jedan zadatak s `--profile`.
-
-| | prototype | standard (zadano) | production |
-|---|---|---|---|
-| Kad | demo, izmišljeni podaci | normalan razvoj prije produkcije | pred puštanje, stvarni korisnici |
-| Testovi | po jedan za svaki kriterij + negativni testovi pristupa | to + rubni slučajevi iz kriterija | testovi prije koda (Test Engineer) |
-| Pregledi | 1 (Code Reviewer) | Code + Risk, Security na prijavi/plaćanju/podacima | svi prema oznakama rizika |
-| Runde | 1 | 2 | 2 + ciljana ispravka |
-| Dokaz | u opisu PR-a | kratak `evidence.md` | puni paket |
-| Istraživanje, ADR | samo kad ti tražiš / nova biblioteka | samo kad ti tražiš / značajne odluke | po oznakama |
-
-Budžet testova je smjernica: S ~10, M ~25, L ~50. Bez izričitog kriterija nema egzotičnih testova, npr. identičnost bajtova slika, determinizam između Windowsa i Linuxa ili matrice svih kombinacija.
-
-Sve što profil odgodi ide u `.dev/followups.md`. Ono što mora biti urađeno prije produkcije dobija oznaku `hardening`. **Release ne prolazi** dok `/paiasa-dev:dev-team harden <modul|all>` to ne zatvori: puni production pregled tih modula, uz preporuku za pen-test gdje ima prijave, plaćanja ili ličnih podataka.
-
-## Tok jednog zadatka (standard)
+## Kako radi: napravi → provjeri → pusti
 
 ```
-Prompt → trijaža rizika (profil, veličina, ko pregleda)
-  → Implementer (opus): kod + testovi za kriterije, u okviru budžeta
-  → Implementer sam provjeri: build, testovi, pokrene aplikaciju, prođe glavni tok, ugasi server
-  → svježi pregled drugog agenta: Code Reviewer + Risk Guardian (+ Security/Architecture po potrebi)
-  → samo "blocking" nalazi (najviše 5 po recenzentu) traže ispravku; ostalo u followups
-  → najviše 2 runde; mala ciljana ispravka bez pitanja
-  → draft PR → ti dobiješ jedan red: zadatak, link, ADR za potvrdu
-  → ČOVJEK: review i merge → staging → ČOVJEK: odobrenje produkcije
+1. NAPRAVI   Implementer piše kod i testove za kriterije prihvatanja (+ test da tuđi/neprijavljeni ne može pristupiti)
+             i pravi kako treba odmah: sva stanja (prazno, greška), provjere na serveru, postojeći obrasci, bez TODO-a
+2. PROVJERI  sam pokrene build, testove i aplikaciju i prođe glavni tok
+             jedan svježi recenzent pregleda kod (+ sigurnosni na prijavi i plaćanju)
+             ozbiljni nalazi (najviše 5) → jedna ispravka → gotovo; ostalo u followups
+3. PUSTI     draft PR → ti dobiješ jedan red s linkom → sljedeći zadatak već radi
 ```
+
+**Na kraju, kad su svi zadaci gotovi, uvijek ide završna provjera.** Tim pokrene cijelu aplikaciju i prođe sve tokove od početka do kraja. Svjež recenzent zatim traži **neslaganja**:
+- kriterij koji nije urađen;
+- dijelovi koji se ne uklapaju;
+- plan kaže jedno, a kod radi drugo;
+- zaostali mockovi i TODO-i.
+
+Rezultat je u `.dev/final-check.md`, a pronađeno se ispravlja. Možeš je pokrenuti i ručno: `/paiasa-dev:dev-team final-check`.
+
+**Prije produkcije** pokreneš `/paiasa-dev:dev-team harden <modul|all>`. To je puni, strogi pregled onoga što je usput odgođeno (`hardening` u `.dev/followups.md`). Release ne prolazi dok to nije zatvoreno.
+
+Profil (`--profile`) mijenjaš rijetko:
+- `prototype` i `standard` (zadano) rade gornji kratki tok;
+- `standard` dodatno daje sigurnosni pregled i tamo gdje ima ličnih podataka;
+- `production` je puni proces.
+
+Testova ima onoliko koliko kriteriji traže: S ~10, M ~25, L ~50, bez egzotike.
 
 ## Kontinuiran rad
 
