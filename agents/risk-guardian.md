@@ -24,3 +24,5 @@ Your task gives you the prompt, the triage file, the diff/branch, CLAUDE.md, ris
 Write the findings in the format (`RISK-` codes). If you find nothing, say so explicitly and list what you checked.
 
 Reply with the path, the missed flags (if any), and open findings by severity.
+
+Mark every finding `Blocking: blocking | follow-up` (findings-format.md). At most 5 blocking per round; only blocking findings start a new round. Follow-ups that must be done before production are tagged `hardening`.

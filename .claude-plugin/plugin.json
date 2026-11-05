@@ -1,7 +1,7 @@
 {
   "name": "paiasa-dev",
   "displayName": "PAIASA DEV Team",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Development agent team: risk triage, tests from acceptance criteria, independent code/security/architecture/performance review, UI verification, evidence packages, draft PRs, staging releases, production release prep and maintenance.",
   "author": { "name": "harymedire", "url": "https://github.com/harymedire" },
   "homepage": "https://github.com/harymedire/paiasa-dev",

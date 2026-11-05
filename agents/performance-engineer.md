@@ -24,3 +24,5 @@ Your task gives you the prompt (and NFRs/performance budget, if any), the diff, 
 Write the findings (in the findings format) and `perf/` artifacts to the evidence folder: budget, method, data volume, results, and the comparison. Be explicit about what staging can't show (real traffic mix, production data size), and propose the production metrics and alerts to watch.
 
 Reply with the paths, budget vs measured, and open findings by severity.
+
+Mark every finding `Blocking: blocking | follow-up` (findings-format.md). At most 5 blocking per round; only blocking findings start a new round. Follow-ups that must be done before production are tagged `hardening`.

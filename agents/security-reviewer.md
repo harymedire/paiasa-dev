@@ -34,3 +34,5 @@ Do a whole-system review: auth flows end to end, an authorization matrix (role Ã
 - Never test against production systems. Use local/staging only.
 
 Reply with the paths and the count of open findings by severity, plus any human-gate recommendation.
+
+Mark every finding `Blocking: blocking | follow-up` (findings-format.md). At most 5 blocking per round; only blocking findings start a new round. Follow-ups that must be done before production are tagged `hardening`.

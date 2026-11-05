@@ -1,6 +1,6 @@
 ---
 name: evidence-reporter
-description: PAIASA DEV evidence reporter. Assembles the verifiable evidence package for a finished task (AC-to-test mapping, test and build results, review outcomes, scans, screenshots, staging link, deviations, open items) for the human reviewers and the PAIASA PM team's acceptance check.
+description: PAIASA DEV evidence reporter. Used in the production profile. Assembles the verifiable evidence package for a finished task (AC-to-test mapping, test and build results, review outcomes, scans, screenshots, staging link, deviations, open items) for the human reviewers and the PAIASA PM team's acceptance check.
 tools: Read, Write, Grep, Glob, Bash
 model: sonnet
 color: cyan
