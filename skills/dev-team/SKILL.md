@@ -27,7 +27,7 @@ Agents do not see this conversation. Give every agent absolute paths to the task
 |---|---|---|
 | Codebase Analyst | `paiasa-dev:codebase-analyst` | every task (map), adoption audit |
 | Test Engineer | `paiasa-dev:test-engineer` | every task, **before** the implementer |
-| Implementer | `paiasa-dev:implementer` | every task (use `model: "fable"` for architecture/security/novelty flags) |
+| Implementer | `paiasa-dev:implementer` | every task (default: `model: "fable"` for architecture/security/novelty flags; a user override in `.dev/team.md` wins) |
 | Code Reviewer | `paiasa-dev:code-reviewer` | every task |
 | Risk Guardian | `paiasa-dev:risk-guardian` | every task, fresh, looks for all five risk types |
 | Security Reviewer | `paiasa-dev:security-reviewer` | security flag; adoption audit; maintenance |
@@ -68,6 +68,16 @@ Make sure the project has a CLAUDE.md, a working test command and `.dev/STATE.md
 
 If the input includes a PM `team.md` (or a handoff folder containing one), apply it per onboarding-and-team.md: specialist agents into `.claude/agents/`, model overrides into `.dev/team.md`, mandatory gates into `.dev/risk-rules.md`, rules into CLAUDE.md. Tell the user what was added. Without it, use the default team.
 
+### User overrides (any time, also mid-run)
+
+The user may change models per task or per agent, the number of review rounds, or which reviewers run, e.g. for a demo phase. Follow "User overrides" in onboarding-and-team.md:
+- Record the override in `.dev/team.md` (date, scope, reason, effective from). Confirm it to the user in one line, including which task it starts with.
+- **Precedence: user override > PM `team.md` > flag rules > agent frontmatter defaults.** A user override is never silently replaced by a default or a flag rule.
+- **Effective from the next task** unless the user says otherwise. Don't interrupt or re-run the task in progress.
+- Before spawning **every** agent, resolve its model and the round limit from `.dev/team.md` and pass `model` explicitly. Note the resolved model per agent in the task's `triage.md`.
+- Overrides can change *how strong* a review is, never *whether* the non-negotiable rules apply. Code-reviewer and risk-guardian keep running on every task. A task with a security flag still gets a security review.
+- If an override **lowers** review strength (cheaper model, fewer rounds, skipped reviewer), add a blocking **pre-production gate** to `.dev/risk-rules.md`: the full review the user names (or, if none is named, a full security review of the affected modules on the default models) must pass before any production release. Name the affected tasks. Tell the user once.
+
 ## Phase 2: Intake and readiness
 
 1. Load the task(s): a prompt file, a folder of prompts (use the order in its README), or pasted text (save it as `.dev/tasks/<id>/prompt.md`).
@@ -87,8 +97,9 @@ branch (and worktree if parallel)
        + security-reviewer / architecture-guardian / performance-engineer per flags
        (re-run layer-2 triage on the real diff first; add reviewers if new flags appear)
  → gate: zero open critical/significant → continue; else implementer fixes or justifies
-       → re-review by the reviewers that had open findings (fresh calls). Max 3 rounds,
-         then escalation.md for the human Tech Lead
+       → re-review by the reviewers that had open findings (fresh calls). Max rounds from
+         .dev/team.md (default 3), then escalation.md for the human Tech Lead (or the person
+         the override names)
  → ui-verifier (if UI): run the app, walk the flows, mobile + desktop screenshots, compare to design
  → evidence-reporter: evidence package
  → you: push branch, open a DRAFT PR with the evidence summary (gh/glab if available; else
@@ -102,7 +113,7 @@ The implementer may propose a **better approach** than the prompt. If it changes
 
 ## Phase 4: Release
 
-On `release`, or when a set of merged tasks forms a release: the **release-engineer** prepares `.dev/releases/<version>.md` per the checklist, deploys to **staging**, runs smoke tests, and writes or updates the runbooks. Then you present the checklist to the user and ask for the **production go/no-go**. If the user says yes and the project's deploy is scriptable, the release-engineer runs it and does post-deploy checks; otherwise give the user the exact steps.
+On `release`, or when a set of merged tasks forms a release: the **release-engineer** prepares `.dev/releases/<version>.md` per the checklist, deploys to **staging**, runs smoke tests, and writes or updates the runbooks. Before that, check the pre-production gates in `.dev/risk-rules.md`: any gate added because an override lowered review strength must have passed, with evidence. If one hasn't, the release is **no-go**; say which gate and which tasks. Then you present the checklist to the user and ask for the **production go/no-go**. If the user says yes and the project's deploy is scriptable, the release-engineer runs it and does post-deploy checks; otherwise give the user the exact steps.
 
 ## Phase 5: Report
 

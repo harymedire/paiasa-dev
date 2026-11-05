@@ -79,4 +79,45 @@ Without team.md the default team is used. You may still create a specialist agen
 | implementer, test-engineer, code-reviewer, risk-guardian, performance-engineer, release-engineer, researcher | opus | strong coding and review across long tasks |
 | codebase-analyst, ui-verifier, evidence-reporter | sonnet | mapping, browser checks, assembly; fast |
 
-For a task with `architecture`, `security` or `novelty` flags, spawn the **implementer with `model: "fable"`**.
+For a task with `architecture`, `security` or `novelty` flags, spawn the **implementer with `model: "fable"`**, unless a user override in `.dev/team.md` says otherwise.
+
+## User overrides
+
+The user can change models, review rounds and reviewers at any time (typical case: a demo phase on synthetic data with a full review planned before production). Record each override as a block in `.dev/team.md`; never delete old blocks, mark them `superseded`.
+
+```markdown
+## Override O-2: demo phase
+- Date: 2026-11-06 | Status: active | Effective from: next task after P-02 (current task not interrupted)
+- Reason (user's words): demo uses synthetic data only; full security review before production (plan §4.2, ToR 7.1)
+- Models per task:
+  - P-03, P-05, P-10, P-11: implementer=fable, security-reviewer=fable; architecture-guardian=fable on P-05, P-11
+  - all other tasks: implementer=opus, security-reviewer=opus, architecture-guardian=opus
+- Unchanged: code-reviewer, risk-guardian run on every task (their default models)
+- Review rounds: max 2, then escalate to <the user>
+- Pre-production gate added: RR-7 in .dev/risk-rules.md
+```
+
+### Resolving the model and the round limit
+
+Before spawning an agent for a task, take the first rule that matches:
+1. an active user override naming this task and this agent;
+2. an active user override naming this agent for "all other tasks" or for all tasks;
+3. a model override from the PM `team.md`;
+4. the flag rule above (implementer on fable for architecture/security/novelty);
+5. the agent's frontmatter default.
+
+Round limit: the active override's value, else the PM `team.md` value, else 3. Write the resolved model per agent and the round limit into the task's `triage.md`, so the evidence package shows what ran.
+
+What an override cannot change: the non-negotiable rules, code-reviewer and risk-guardian on every task, a security review on tasks with a security flag (only its model and rounds can change), tests from acceptance criteria, humans merging and approving production. If a request would break one of these, say which rule and ask.
+
+### Pre-production gate for lowered review strength
+
+When an override makes review weaker than the defaults (cheaper model, fewer rounds, a reviewer skipped), append to `.dev/risk-rules.md`:
+
+```markdown
+## RR-7 (pre-production gate, from override O-2)
+- Before any production release: a full security review (security-reviewer and architecture-guardian on fable, max 3 rounds) of the modules changed by tasks <list> must pass with zero open critical/significant findings.
+- Source: user override O-2 (<date>); plan reference if given (e.g. plan §4.2, ToR 7.1).
+```
+
+The release-engineer and the orchestrator treat this gate as blocking at release (SKILL.md Phase 4). It is closed only with evidence, never by a later override that just removes it. Removing it needs the user's explicit yes for that.

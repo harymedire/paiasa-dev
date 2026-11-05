@@ -95,6 +95,17 @@ Prompt → Codebase Analyst (mapa koda) → trijaža rizika (procjena + fiksna p
 
 Modeli se biraju po nivoima: **top → `fable`**, **strong → `opus`**, **fast → `sonnet`**. Preporuke iz `team.md` (PAIASA Validate) se primjenjuju po zadatku; bez njega se koristi zadani tim. Dodatni specijalisti (npr. `payments-specialist`) nastaju u repozitoriju u `.claude/agents/`, pa ih dobija i ljudski tim.
 
+### Tvoje izmjene modela i rundi
+
+Možeš u bilo kom trenutku reći timu koje modele da koristi po zadatku ili po agentu i koliko rundi recenzije dozvoljavaš, npr. za demo fazu na sintetičkim podacima. Primjer:
+
+> Za P-03, P-05, P-10 i P-11 implementer i security-reviewer na fable; sve ostalo na opus; najviše 2 runde, pa eskalacija meni.
+
+- Tim to upisuje u `.dev/team.md` i potvrđuje jednom rečenicom. Izmjena važi **od sljedećeg zadatka**, a tekući zadatak ne prekida.
+- Tvoja izmjena ima prednost nad `team.md` iz PM-a i nad zadanim pravilima.
+- Code-reviewer i risk-guardian rade na svakom zadatku. Zadatak sa security oznakom uvijek dobija security pregled; mijenja se samo model i broj rundi.
+- Ako izmjena **oslabi** recenzije, tim upisuje blokirajući korak prije produkcije u `.dev/risk-rules.md`: puni pregled zahvaćenih modula mora proći prije produkcije. Release ne ide dok taj korak nije zatvoren dokazom.
+
 ## Šta nastaje u repozitoriju
 
 ```
@@ -118,7 +129,7 @@ Paket dokaza iz `.dev/evidence/` daš PM-u: `/paiasa-pm:pm-team accept <putanja>
 ## Napomene
 
 - Guard hook koristi `bash`. Na Windowsu to zahtijeva Git for Windows, koji Claude Code ionako koristi.
-- Prva verzija (0.1.0). Kod izmjena povećaj `version` u `.claude-plugin/plugin.json`.
+- Verzija 0.2.0: tvoje izmjene modela i rundi s jasnim prioritetom i blokirajućim korakom prije produkcije kad se recenzije oslabe. Kod izmjena povećaj `version` u `.claude-plugin/plugin.json`.
 
 ## English quick start
 
