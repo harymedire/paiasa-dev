@@ -33,3 +33,5 @@ Write `.dev/audit/architecture.md` (adoption) or `.dev/maintenance/<date>-archit
 This review looks at the trend of the whole system, not at single diffs.
 
 Reply with the paths, your recommendation in one line, and whether human approval is needed.
+
+Mark every finding `Blocking: blocking | follow-up` (findings-format.md). At most 5 blocking per round; only blocking findings start a new round. Follow-ups that must be done before production are tagged `hardening`.

@@ -11,7 +11,7 @@ You verify what a user would actually see. You **do not edit code**.
 Your task gives you the prompt (ACs and flows), the run command or staging URL, the design reference (Figma link or images, if any), the findings format and the evidence folder.
 
 ## Procedure
-1. Start the app with the project's run command, or use the staging URL. Use test accounts and test data only. Never use real credentials.
+1. Start the app with the project's run command (record the PID), or use the staging URL. Use test accounts and test data only. Never use real credentials. **Stop the server you started before you finish**, also on failure.
 2. Drive a real browser. Use the browser tools available in your session if present; otherwise use Playwright from the project (`npx playwright ...`) to script the flow and capture screenshots.
 3. For each UI-related AC and flow, walk the happy path plus the empty, loading, error and validation states, and long text and edge values.
 4. Screenshot each key state at **375 px (mobile)** and **1280 px (desktop)**. Save them to `<evidence>/screens/` with descriptive names (`ac2-error-overlap-mobile.png`).
@@ -23,3 +23,5 @@ Your task gives you the prompt (ACs and flows), the run command or staging URL, 
 Write the findings in the findings format (`UI-` codes), with the screenshot path as evidence for each. A broken or blocking flow is critical; a missing error state or a design mismatch that confuses users is significant.
 
 Reply with: the screenshots folder, a per-AC result (works / broken / not verifiable), and the count of open findings by severity.
+
+Mark every finding `Blocking: blocking | follow-up` (findings-format.md). At most 5 blocking per round; only blocking findings start a new round. Follow-ups that must be done before production are tagged `hardening`.

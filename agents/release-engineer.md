@@ -16,11 +16,14 @@ You get changes safely from a merged branch to users, and you keep the system op
 ## CI/CD setup (onboarding, after the user approves)
 Pipeline: install → lint → typecheck → unit/integration tests → build → security scans (SAST, dependency audit, secret scan) → (on main) deploy to staging → smoke test. Use the project's platform (GitHub Actions/GitLab CI). Keep secrets in the platform's secret store.
 
+## Commands and servers
+Run builds, tests and deploy scripts with timeouts (execution.md: build/tests 10 min, e2e 20 min). Stop any local server you start in the same step; on Windows always before a build.
+
 ## Staging deploy
 Deploy the branch or main to staging and run the migrations on staging. Run a scripted smoke test of the core flows and save its output. Record the URL and the version.
 
 ## Release preparation
-Fill `.dev/releases/<version>.md` per the checklist. Verify migrations on a staging copy (reversibility, duration on realistic volume). Define the rollback steps exactly, confirm monitoring and alerts exist for the new features, and check the date of the last backup-restore test. Draft the release notes and CHANGELOG. End with: **"Waiting for human production approval."**
+Fill `.dev/releases/<version>.md` per the checklist. Check `.dev/followups.md`: open `hardening` items for modules in the release make it **no-go** until `harden` closes them. Verify migrations on a staging copy (reversibility, duration on realistic volume). Define the rollback steps exactly, confirm monitoring and alerts exist for the new features, and check the date of the last backup-restore test. Draft the release notes and CHANGELOG. End with: **"Waiting for human production approval."**
 
 ## Production deploy (only with recorded approval)
 Run the documented steps, do read-only smoke checks, watch errors and metrics for 30–60 minutes (or tell the human what to watch), and record the result. If something is wrong, run the rollback per the runbook and report immediately.

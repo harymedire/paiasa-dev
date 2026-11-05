@@ -1,6 +1,27 @@
 # Evidence package
 
-Written by the evidence-reporter for every task. It goes back to the PM team (`/paiasa-pm:pm-team accept <path>`) and to the human reviewers. It must be verifiable: link or attach every artifact. A claim without an artifact is not evidence.
+How much evidence depends on the profile (profiles.md):
+
+| Profile | Where | Contents |
+|---|---|---|
+| prototype | the PR description (no separate file) | AC table (AC → test → pass), CI or local test result line, 2–4 screenshots for UI, follow-ups added |
+| standard | `.dev/evidence/<prompt-id>.md`, one screen, written by the orchestrator | the same, plus reviewers that ran and their verdicts, deviations |
+| production | full package below, written by the evidence-reporter | everything below |
+
+Short form (prototype/standard):
+
+```markdown
+## Evidence: P-04 Login
+| AC | Test | Result |
+|---|---|---|
+| AC1 | auth.spec.ts › "logs in with valid credentials" | pass |
+Build/tests: pass (142 tests, CI run <link>) · Reviews: CR ok, RISK ok, SEC ok (1 follow-up → FU-012)
+Screens: <links> · Deviations: none
+```
+
+## Full package (production)
+
+Written by the evidence-reporter for every production task. It goes back to the PM team (`/paiasa-pm:pm-team accept <path>`) and to the human reviewers. It must be verifiable: link or attach every artifact. A claim without an artifact is not evidence.
 
 Path: `.dev/evidence/<prompt-id>-<slug>.md`, with artifacts in `.dev/evidence/<prompt-id>/` (screenshots, test logs, scan reports, load-test results).
 
@@ -23,7 +44,7 @@ Path: `.dev/evidence/<prompt-id>-<slug>.md`, with artifacts in `.dev/evidence/<p
 |---|---|---|
 | Unit/integration tests | 142 passed, 0 failed | logs/tests.txt |
 | Lint / typecheck / build | pass | logs/build.txt |
-| Code review | 0 open critical/significant | review.md |
+| Code review | 0 open blocking | review.md |
 | Risk guardian | 0 open | risk.md |
 | Security review + scans | pass / n.a. | security.md, scans/ |
 | Architecture (ADR) | ADR-004 approved by <human> / n.a. | docs/adr/004.md |

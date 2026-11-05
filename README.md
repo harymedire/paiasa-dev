@@ -46,27 +46,57 @@ Otvori Claude Code u **repozitoriju koda** i pokreni:
 /paiasa-dev:dev-team resume
 /paiasa-dev:dev-team release
 /paiasa-dev:dev-team maintain
+/paiasa-dev:dev-team harden auth                                 ← puni pregled modula prije produkcije (ili `all`)
+/paiasa-dev:dev-team ../plan/prompts/04-login.md --profile prototype   ← profil samo za ovaj zadatak
 ```
 
 - **Novi projekat:** postavi osnovu (testovi, linter, CLAUDE.md), predloži CI i sigurnosne skenere, pa implementira.
 - **Postojeći projekat koji je neko započeo:** prvo uradi pregled koda, sigurnosti i arhitekture i daje ti izvještaj o stanju s prijedlozima. Bez tvog odobrenja ništa ne refaktoriše.
 - **Nastavak:** ako postoji `.dev/STATE.md`, nastavlja gdje je stao.
 
-## Tok jednog zadatka
+## Profili procesa
+
+Tim radi **razvoj i provjeru onoga što je napravio**, a strogoća zavisi od profila. Profil biraš jednom za projekat (tim pita na početku, a zadani je **standard**) ili za jedan zadatak s `--profile`.
+
+| | prototype | standard (zadano) | production |
+|---|---|---|---|
+| Kad | demo, izmišljeni podaci | normalan razvoj prije produkcije | pred puštanje, stvarni korisnici |
+| Testovi | po jedan za svaki kriterij + negativni testovi pristupa | to + rubni slučajevi iz kriterija | testovi prije koda (Test Engineer) |
+| Pregledi | 1 (Code Reviewer) | Code + Risk, Security na prijavi/plaćanju/podacima | svi prema oznakama rizika |
+| Runde | 1 | 2 | 2 + ciljana ispravka |
+| Dokaz | u opisu PR-a | kratak `evidence.md` | puni paket |
+| Istraživanje, ADR | samo kad ti tražiš / nova biblioteka | samo kad ti tražiš / značajne odluke | po oznakama |
+
+Budžet testova je smjernica: S ~10, M ~25, L ~50. Bez izričitog kriterija nema egzotičnih testova, npr. identičnost bajtova slika, determinizam između Windowsa i Linuxa ili matrice svih kombinacija.
+
+Sve što profil odgodi ide u `.dev/followups.md`. Ono što mora biti urađeno prije produkcije dobija oznaku `hardening`. **Release ne prolazi** dok `/paiasa-dev:dev-team harden <modul|all>` to ne zatvori: puni production pregled tih modula, uz preporuku za pen-test gdje ima prijave, plaćanja ili ličnih podataka.
+
+## Tok jednog zadatka (standard)
 
 ```
-Prompt → Codebase Analyst (mapa koda) → trijaža rizika (procjena + fiksna pravila)
-  → Definition of Ready (nejasno? → pitanja za PM tim, zadatak čeka)
-  → [novina → spike s 2–3 prototipa] [arhitektura → ADR, veće promjene odobrava čovjek]
-  → Test Engineer: testovi iz kriterija prihvatanja (moraju prvo pasti)
-  → Implementer: kod dok testovi ne prođu (Fable za rizične zadatke)
-  → svježi, nezavisni pregledi: Code Reviewer + Risk Guardian (uvijek)
-       + Security / Architecture / Performance prema oznakama rizika
-  → gate: 0 otvorenih kritičnih/značajnih nalaza (najviše 3 kruga, pa eskalacija čovjeku)
-  → UI Verifier: browser, mobilna i desktop širina, snimci ekrana
-  → Evidence Reporter: paket dokaza → draft PR
-  → ČOVJEK: review i merge  → staging → ČOVJEK: odobrenje produkcije
+Prompt → trijaža rizika (profil, veličina, ko pregleda)
+  → Implementer (opus): kod + testovi za kriterije, u okviru budžeta
+  → Implementer sam provjeri: build, testovi, pokrene aplikaciju, prođe glavni tok, ugasi server
+  → svježi pregled drugog agenta: Code Reviewer + Risk Guardian (+ Security/Architecture po potrebi)
+  → samo "blocking" nalazi (najviše 5 po recenzentu) traže ispravku; ostalo u followups
+  → najviše 2 runde; mala ciljana ispravka bez pitanja
+  → draft PR → ti dobiješ jedan red: zadatak, link, ADR za potvrdu
+  → ČOVJEK: review i merge → staging → ČOVJEK: odobrenje produkcije
 ```
+
+## Kontinuiran rad
+
+- **Datumi u planu su rokovi, ne termini javljanja.** Tim ne čeka "ponedjeljak", nego radi dok ima spremnih zadataka.
+- Dok je jedan zadatak u pregledu, sljedeći već kreće. Paralelne grupe iz README-a promptova kreću zajedno.
+- **Naslagani PR-ovi:** zavisni zadatak se grana od grane prethodnog i ne čeka merge. Ti merge-aš jedan po jedan, od najnižeg, s **"Create a merge commit"** (ne squash).
+- Nakon prva 2 zadatka tim javlja prosječno vrijeme po zadatku i procjenu do kraja.
+- Može predložiti spajanje 2–3 mala povezana prompta u jedan PR.
+- **Zaštita od zastoja:**
+  - build i unit testovi imaju timeout od 10 min, e2e od 20 min;
+  - server pokrenut za provjeru gasi se u istom koraku;
+  - watchdog provjerava agente ako se 30 min nijedan fajl ne promijeni;
+  - ako ne može ugasiti proces, javi ti tačan PID i komandu.
+- **Poruke iz druge sesije (npr. PM):** tim ih ne izvršava sam. Sažme ih u 2–3 reda i traži od tebe jednu riječ, "potvrđujem".
 
 ## Granice (ugrađene)
 
@@ -82,16 +112,16 @@ Prompt → Codebase Analyst (mapa koda) → trijaža rizika (procjena + fiksna p
 |---|---|---|
 | Architecture Guardian | Fable | ADR-ovi, arhitektonska pravila, mjesečni pregled trenda |
 | Security Reviewer | Fable | prijetnje, OWASP provjera, skeneri, audit |
-| Implementer | Opus (Fable za rizične) | implementacija |
-| Test Engineer | Opus | testovi iz kriterija prihvatanja, prije koda |
+| Implementer | Opus (Fable samo u production, uz tvoje "da") | implementacija i provjera urađenog |
+| Test Engineer | Opus | production: testovi iz kriterija prije koda |
 | Code Reviewer | Opus | ispravnost, testovi, konzistentnost |
-| Risk Guardian | Opus | na svakom zadatku traži propuštene rizike |
+| Risk Guardian | Opus | standard i production: traži propuštene rizike |
 | Performance Engineer | Opus | budžeti, upiti, testovi opterećenja |
 | Release Engineer | Opus | CI/CD, staging, release, runbookovi, održavanje |
-| Researcher | Opus | spike za nove probleme |
-| Codebase Analyst | Sonnet | mapa koda, audit |
-| UI Verifier | Sonnet | provjera u browseru |
-| Evidence Reporter | Sonnet | paket dokaza |
+| Researcher | Opus | samo kad ti tražiš: spike za nove probleme |
+| Codebase Analyst | Sonnet | production (veći zadaci) i preuzimanje projekta |
+| UI Verifier | Sonnet | production: provjera u browseru |
+| Evidence Reporter | Sonnet | production: puni paket dokaza |
 
 Modeli se biraju po nivoima: **top → `fable`**, **strong → `opus`**, **fast → `sonnet`**. Preporuke iz `team.md` (PAIASA Validate) se primjenjuju po zadatku; bez njega se koristi zadani tim. Dodatni specijalisti (npr. `payments-specialist`) nastaju u repozitoriju u `.claude/agents/`, pa ih dobija i ljudski tim.
 
@@ -126,10 +156,16 @@ docs/adr/                  ← arhitektonske odluke
 
 Paket dokaza iz `.dev/evidence/` daš PM-u: `/paiasa-pm:pm-team accept <putanja>`. PM provjerava svaki kriterij prihvatanja na osnovu samih dokaza, a ne na osnovu tvrdnje da je "urađeno".
 
+## Windows napomene
+
+- Windows Server nema Docker ni WSL: koristi nativni PostgreSQL i Mailpit za lokalni email. Windows 11 Home nema Hyper-V; Docker Desktop traži WSL2.
+- Upaljen Node/Next server zaključava fajlove: tim zato gasi servere prije `next build`. Ako `npm ci` padne s EPERM, uzrok je proces koji drži fajl.
+- Skripte u projektu trebaju raditi i u PowerShellu (`cross-env`, `rimraf` ili Node skripte, ne bash-only sintaksa).
+
 ## Napomene
 
 - Guard hook koristi `bash`. Na Windowsu to zahtijeva Git for Windows, koji Claude Code ionako koristi.
-- Verzija 0.2.0: tvoje izmjene modela i rundi s jasnim prioritetom i blokirajućim korakom prije produkcije kad se recenzije oslabe. Kod izmjena povećaj `version` u `.claude-plugin/plugin.json`.
+- Verzija 0.3.0: profili procesa, komanda `harden`, proporcionalni testovi, kontinuiran rad i zaštita od zastoja. Sve izmjene su u [CHANGELOG.md](CHANGELOG.md). Kod izmjena povećaj `version` u `.claude-plugin/plugin.json` i `marketplace.json`.
 
 ## English quick start
 
@@ -141,7 +177,7 @@ claude plugin marketplace add harymedire/paiasa-dev
 claude plugin install paiasa-dev@paiasa-dev
 ```
 
-Then, in your code repository, run `/paiasa-dev:dev-team <prompt file | prompts folder (plan/prompts) | handoff folder | pasted task | resume | release | maintain>`.
+Then, in your code repository, run `/paiasa-dev:dev-team <prompt file | prompts folder (plan/prompts) | handoff folder | pasted task | resume | release | maintain | harden [module|all]> [--profile prototype|standard|production]`. Default profile: standard.
 
 ## License
 

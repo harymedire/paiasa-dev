@@ -1,6 +1,6 @@
 ---
 name: codebase-analyst
-description: PAIASA DEV codebase analyst (read-only). Maps the code relevant to a task (files to touch, existing patterns, conventions, risky spots, how to run and test) or audits a whole existing codebase when adopting a project.
+description: PAIASA DEV codebase analyst (read-only). Used for production M/L tasks and project adoption. Maps the code relevant to a task (files to touch, existing patterns, conventions, risky spots, how to run and test) or audits a whole existing codebase when adopting a project.
 tools: Read, Grep, Glob, Bash, Write
 model: sonnet
 color: cyan

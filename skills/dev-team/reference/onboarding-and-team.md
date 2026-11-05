@@ -9,11 +9,11 @@
 - Stack: <languages, frameworks, DB, hosting>
 - Commands: test=<...> lint=<...> typecheck=<...> build=<...> run=<...> e2e=<...>
 - Git host / tickets: <GitHub|GitLab|none> / <Jira|ClickUp|files>
-- Team file: .dev/team.md (from PM team.md: yes/no)
+- Team file: .dev/team.md (from PM team.md: yes/no) | Profile: prototype | standard | production
 - Last updated: <date>
 
 ## Tasks
-| Prompt | Status (queued/ready/blocked/in-progress/in-review/pr-open/merged/accepted) | Branch | PR | Notes |
+| Prompt | Status (queued/ready/blocked/in-progress/in-review/pr-open/merged/accepted) | Branch (stacked on) | PR | Started / PR ready | Notes |
 
 ## Waiting on humans
 - <PR review / ADR approval / production approval / question>
@@ -71,15 +71,16 @@ If the user supplies the PM team's `team.md` (or the PM handoff folder):
 
 Without team.md the default team is used. You may still create a specialist agent yourself if the project clearly needs one (e.g. payments, maps, ML). Say why in one line.
 
-## Default models (in each agent's frontmatter)
+## Models
 
-| Agent | Model | Why |
+| Agent | Frontmatter default | In practice (profiles.md) |
 |---|---|---|
-| architecture-guardian, security-reviewer | fable | hardest judgment; costly mistakes |
-| implementer, test-engineer, code-reviewer, risk-guardian, performance-engineer, release-engineer, researcher | opus | strong coding and review across long tasks |
-| codebase-analyst, ui-verifier, evidence-reporter | sonnet | mapping, browser checks, assembly; fast |
+| implementer | opus | **opus in every profile**; Fable only in production with the user's explicit yes for that task |
+| security-reviewer, architecture-guardian | fable | run only where the profile activates them (auth/payments in prototype; flagged tasks in standard and production) |
+| code-reviewer, risk-guardian, test-engineer, performance-engineer, release-engineer, researcher | opus | per profile |
+| codebase-analyst, ui-verifier, evidence-reporter | sonnet | production (and larger UI tasks in standard) |
 
-For a task with `architecture`, `security` or `novelty` flags, spawn the **implementer with `model: "fable"`**, unless a user override in `.dev/team.md` says otherwise.
+Record the project profile in `.dev/team.md` (`Profile: standard`).
 
 ## User overrides
 
@@ -103,12 +104,12 @@ Before spawning an agent for a task, take the first rule that matches:
 1. an active user override naming this task and this agent;
 2. an active user override naming this agent for "all other tasks" or for all tasks;
 3. a model override from the PM `team.md`;
-4. the flag rule above (implementer on fable for architecture/security/novelty);
+4. the profile (profiles.md; implementer is opus unless production + explicit user yes);
 5. the agent's frontmatter default.
 
-Round limit: the active override's value, else the PM `team.md` value, else 3. Write the resolved model per agent and the round limit into the task's `triage.md`, so the evidence package shows what ran.
+Round limit: the active override's value, else the PM `team.md` value, else the profile's (prototype 1, standard 2, production 2). Write the resolved model per agent and the round limit into the task's `triage.md`, so the evidence package shows what ran.
 
-What an override cannot change: the non-negotiable rules, code-reviewer and risk-guardian on every task, a security review on tasks with a security flag (only its model and rounds can change), tests from acceptance criteria, humans merging and approving production. If a request would break one of these, say which rule and ask.
+What an override cannot change: the non-negotiable rules (SKILL.md), a code-reviewer on every task, a test for every AC, humans merging and approving production. Anything an override or a profile skips for a risky area is recorded as `hardening` in `.dev/followups.md`. If a request would break one of these, say which rule and ask.
 
 ### Pre-production gate for lowered review strength
 
@@ -120,4 +121,4 @@ When an override makes review weaker than the defaults (cheaper model, fewer rou
 - Source: user override O-2 (<date>); plan reference if given (e.g. plan §4.2, ToR 7.1).
 ```
 
-The release-engineer and the orchestrator treat this gate as blocking at release (SKILL.md Phase 4). It is closed only with evidence, never by a later override that just removes it. Removing it needs the user's explicit yes for that.
+The release-engineer and the orchestrator treat this gate as blocking at release (SKILL.md Phase 4); `harden <module>` is the normal way to close it, together with the `hardening` items in `.dev/followups.md`. It is closed only with evidence, never by a later override that just removes it. Removing it needs the user's explicit yes for that.

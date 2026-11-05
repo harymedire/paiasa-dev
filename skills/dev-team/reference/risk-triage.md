@@ -32,19 +32,24 @@ Projects can add rules in `.dev/risk-rules.md` (e.g. from the PM team's team.md 
 
 ## What each flag activates
 
+The flags are always recorded. **Which reviewers they activate depends on the profile** (profiles.md): in prototype only auth/payments get a security review; in standard auth, payments and personal data get one and architecture review runs only for real architecture changes; in production the table below applies in full. Whatever a profile skips for a flagged area goes to `.dev/followups.md` as `hardening`.
+
+Production (full):
+
 | Flag | Required before PR | Agent |
 |---|---|---|
 | (always) | code review + risk guardian | code-reviewer, risk-guardian |
 | architecture | ADR written and reviewed; architecture rules respected; human approval of the ADR for major changes | architecture-guardian |
 | clarity | stop: questions file for the PM team; no implementation of the ambiguous part | orchestrator |
 | performance | performance budget defined; query/bundle analysis; load test on staging for endpoints with a budget | performance-engineer |
-| novelty | spike: research + 2–3 time-boxed prototypes + recommendation with uncertainty; human picks | researcher |
+| novelty | spike: research + 2–3 time-boxed prototypes + recommendation with uncertainty; human picks (in prototype/standard only if the user says yes) | researcher |
 | security | security review with checklist; automated scans pass; human review for auth/payments | security-reviewer |
 
 ## Record
 
 Write the profile at the top of `.dev/tasks/<task-id>/triage.md`:
 ```
+Profile: standard | Size: M
 Flags: security, performance
 Layer 1 reasons: ...
 Layer 2 rules hit: payment path, new dependency (stripe@x)
