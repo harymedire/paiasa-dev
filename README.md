@@ -1,12 +1,12 @@
 # PAIASA DEV Team
 
-Razvojni tim agenata za Claude Code. Prima promptove (iz [PAIASA PM Team](https://github.com/harymedire/paiasa-pm) ili ručno napisane) i implementira ih **do kraja**:
+Razvojni tim agenata za Claude Code. Prima promptove (iz [PAIASA PM](https://github.com/harymedire/paiasa-pm), iz PAIASA Validate ili ručno napisane) i implementira ih **do kraja**:
 - trijaža rizika i testovi iz kriterija prihvatanja;
 - nezavisni code, sigurnosni, arhitektonski i performance pregledi;
 - provjera UI-ja u browseru i paket dokaza;
 - draft PR, staging, priprema za produkciju i održavanje.
 
-Claude Code koji pokreneš je **Orkestrator**. On vodi tim i, ako PM tim to preporuči, dodaje nove agente i prilagođava modele za projekat.
+Claude Code koji pokreneš je **Orkestrator**. On vodi tim i, ako preporuka tima (`team.md` iz PAIASA Validate) to traži, dodaje nove agente i prilagođava modele za projekat.
 
 ## Instalacija
 
@@ -39,8 +39,9 @@ U otvorenoj sesiji nakon ažuriranja pokreni `/reload-plugins`.
 Otvori Claude Code u **repozitoriju koda** i pokreni:
 
 ```
-/paiasa-dev:dev-team ../moj-projekat/.product/handoff          ← prvi put: cijeli handoff (čita i team.md)
-/paiasa-dev:dev-team ../moj-projekat/.product/handoff/prompts/03-booking-calendar.md
+/paiasa-dev:dev-team ../moj-projekat/plan/prompts               ← promptovi iz PAIASA PM (cijeli folder)
+/paiasa-dev:dev-team ../moj-projekat/plan/prompts/03-booking-calendar.md
+/paiasa-dev:dev-team ../moj-projekat/.product/handoff            ← handoff iz PAIASA Validate (čita i team.md)
 /paiasa-dev:dev-team <zalijepljen opis zadatka>
 /paiasa-dev:dev-team resume
 /paiasa-dev:dev-team release
@@ -92,7 +93,7 @@ Prompt → Codebase Analyst (mapa koda) → trijaža rizika (procjena + fiksna p
 | UI Verifier | Sonnet | provjera u browseru |
 | Evidence Reporter | Sonnet | paket dokaza |
 
-Modeli se biraju po nivoima: **top → `fable`**, **strong → `opus`**, **fast → `sonnet`**. Preporuke iz PM-ovog `team.md` se primjenjuju po zadatku. Dodatni specijalisti (npr. `payments-specialist`) nastaju u repozitoriju u `.claude/agents/`, pa ih dobija i ljudski tim.
+Modeli se biraju po nivoima: **top → `fable`**, **strong → `opus`**, **fast → `sonnet`**. Preporuke iz `team.md` (PAIASA Validate) se primjenjuju po zadatku; bez njega se koristi zadani tim. Dodatni specijalisti (npr. `payments-specialist`) nastaju u repozitoriju u `.claude/agents/`, pa ih dobija i ljudski tim.
 
 ## Šta nastaje u repozitoriju
 
@@ -102,7 +103,7 @@ docs/adr/                  ← arhitektonske odluke
 .claude/agents/            ← specijalisti za ovaj projekat (ako trebaju)
 .dev/
 ├── STATE.md               ← status zadataka, šta čeka ljude, sljedeći korak
-├── team.md, risk-rules.md ← iz PM preporuke
+├── team.md, risk-rules.md ← iz preporuke tima (PAIASA Validate), ako postoji
 ├── tasks/<id>/            ← prompt, mapa, trijaža, pregledi, odgovori, spike, prijetnje
 ├── evidence/              ← paketi dokaza → za PM prihvatanje
 ├── audit/                 ← pregled postojećeg projekta
@@ -110,9 +111,9 @@ docs/adr/                  ← arhitektonske odluke
 └── maintenance/           ← izvještaji održavanja
 ```
 
-## Povratak PM timu
+## Povratak PM-u
 
-Paket dokaza iz `.dev/evidence/` daš PM timu: `/paiasa-pm:pm-team accept <putanja>`. PO agent provjerava svaki kriterij prihvatanja na osnovu samih dokaza, a ne na osnovu tvrdnje da je "urađeno".
+Paket dokaza iz `.dev/evidence/` daš PM-u: `/paiasa-pm:pm-team accept <putanja>`. PM provjerava svaki kriterij prihvatanja na osnovu samih dokaza, a ne na osnovu tvrdnje da je "urađeno".
 
 ## Napomene
 
@@ -129,7 +130,7 @@ claude plugin marketplace add harymedire/paiasa-dev
 claude plugin install paiasa-dev@paiasa-dev
 ```
 
-Then, in your code repository, run `/paiasa-dev:dev-team <prompt file | handoff folder | pasted task | resume | release | maintain>`.
+Then, in your code repository, run `/paiasa-dev:dev-team <prompt file | prompts folder (plan/prompts) | handoff folder | pasted task | resume | release | maintain>`.
 
 ## License
 
